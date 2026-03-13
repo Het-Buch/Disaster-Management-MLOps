@@ -32,6 +32,10 @@ pipeline {
                 sh 'docker ps'
             }
         }
-
+        stage('Show Running Containers') {
+            steps {
+                sh 'docker ps -a'
+            }
+        }
     }
 }
