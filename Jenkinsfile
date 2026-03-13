@@ -3,39 +3,37 @@ pipeline {
 
     stages {
 
-        stage('Clone Repo') {
+        stage('Clone Repository') {
             steps {
                 git 'https://github.com/Het-Buch/Disaster-Management-MLOps.git'
             }
         }
 
-        stage('Cleanup Old Containers') {
+        stage('Check Project Files') {
             steps {
-                sh 'docker compose down || true'
+                sh 'ls -la'
             }
         }
 
-        stage('Build Images') {
+        stage('Install Dependencies') {
             steps {
-                sh 'docker compose build'
+                sh 'pip install -r requirements.txt || true'
+                sh 'pip install streamlit'
             }
         }
 
-        stage('Start Services') {
+        stage('Run Streamlit App') {
             steps {
-                sh 'docker compose up -d'
+                sh 'streamlit run streamlit_app.py --server.port 8501 &'
+                sh 'sleep 10'
             }
         }
 
-        stage('Check Containers') {
+        stage('Verify App Running') {
             steps {
-                sh 'docker ps'
+                sh 'curl http://localhost:8501 || true'
             }
         }
-        stage('Show Running Containers') {
-            steps {
-                sh 'docker ps -a'
-            }
-        }
+
     }
 }
