@@ -42,5 +42,6 @@ def train():
         mlflow.log_param("max_features", 3000)
         mlflow.log_metric("val_accuracy", val_score)
         mlflow.sklearn.log_model(pipeline, "model")
+        registry_model_name = "DisasterResponseModel"
 if __name__ == "__main__":
     train()
