@@ -1,27 +1,21 @@
 pipeline {
     agent any
 
-    environment {
-        PROJECT_NAME = "disaster-mlops"
-    }
-
     stages {
 
-        stage('Clone Repository') {
+        stage('Clone Repo') {
             steps {
-                git branch: 'main',
-                url: 'https://github.com/YOUR_USERNAME/Disaster-Management-MLOps.git'
+                git 'https://github.com/Het-Buch/Disaster-Management-MLOps.git'
             }
         }
 
-        stage('Check Docker Installation') {
+        stage('Cleanup Old Containers') {
             steps {
-                sh 'docker --version'
-                sh 'docker compose version'
+                sh 'docker compose down || true'
             }
         }
 
-        stage('Build Docker Images') {
+        stage('Build Images') {
             steps {
                 sh 'docker compose build'
             }
@@ -33,26 +27,11 @@ pipeline {
             }
         }
 
-        stage('Verify Running Containers') {
+        stage('Check Containers') {
             steps {
                 sh 'docker ps'
             }
         }
 
-        stage('Check API Service') {
-            steps {
-                sh 'sleep 10'
-                sh 'curl http://localhost:8000 || true'
-            }
-        }
-    }
-
-    post {
-        success {
-            echo 'Pipeline executed successfully. Services are running.'
-        }
-        failure {
-            echo 'Pipeline failed.'
-        }
     }
 }
