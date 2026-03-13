@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'python:3.10'
+        }
+    }
 
     stages {
 
@@ -15,43 +19,34 @@ pipeline {
             }
         }
 
-        stage('Install Python') {
-            steps {
-                sh '''
-                apt-get update
-                apt-get install -y python3 python3-pip
-                '''
-            }
-        }
-
         stage('Install API Dependencies') {
             steps {
-                sh 'pip3 install -r api/requirements.txt'
+                sh 'pip install -r api/requirements.txt'
             }
         }
 
         stage('Install ML Dependencies') {
             steps {
-                sh 'pip3 install -r ml/requirements.txt'
+                sh 'pip install -r ml/requirements.txt'
             }
         }
 
         stage('Install Streamlit Dependencies') {
             steps {
-                sh 'pip3 install -r streamlit/requirements.txt'
+                sh 'pip install -r streamlit/requirements.txt'
             }
         }
 
-        stage('Verify Python Setup') {
+        stage('Verify Python Environment') {
             steps {
-                sh 'python3 --version'
-                sh 'pip3 --version'
+                sh 'python --version'
+                sh 'pip --version'
             }
         }
 
-        stage('Check Streamlit App Syntax') {
+        stage('Check Streamlit Syntax') {
             steps {
-                sh 'python3 -m py_compile streamlit/app.py || true'
+                sh 'python -m py_compile streamlit/app.py'
             }
         }
 
