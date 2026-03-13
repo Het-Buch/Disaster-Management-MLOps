@@ -9,29 +9,49 @@ pipeline {
             }
         }
 
-        stage('Check Project Files') {
+        stage('Check Project Structure') {
             steps {
-                sh 'ls -la'
+                sh 'ls -R'
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Install Python') {
             steps {
-                sh 'pip install -r requirements.txt || true'
-                sh 'pip install streamlit'
+                sh '''
+                apt-get update
+                apt-get install -y python3 python3-pip
+                '''
             }
         }
 
-        stage('Run Streamlit App') {
+        stage('Install API Dependencies') {
             steps {
-                sh 'streamlit run streamlit_app.py --server.port 8501 &'
-                sh 'sleep 10'
+                sh 'pip3 install -r api/requirements.txt'
             }
         }
 
-        stage('Verify App Running') {
+        stage('Install ML Dependencies') {
             steps {
-                sh 'curl http://localhost:8501 || true'
+                sh 'pip3 install -r ml/requirements.txt'
+            }
+        }
+
+        stage('Install Streamlit Dependencies') {
+            steps {
+                sh 'pip3 install -r streamlit/requirements.txt'
+            }
+        }
+
+        stage('Verify Python Setup') {
+            steps {
+                sh 'python3 --version'
+                sh 'pip3 --version'
+            }
+        }
+
+        stage('Check Streamlit App Syntax') {
+            steps {
+                sh 'python3 -m py_compile streamlit/app.py || true'
             }
         }
 
